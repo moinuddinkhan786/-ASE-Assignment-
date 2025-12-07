@@ -1,0 +1,91 @@
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+public class AnagramChecker {
+
+    /**
+     * Check if two strings are anagrams using sorting method
+     * (case-insensitive, ignoring spaces)
+     */
+    public static boolean isAnagram(String s1, String s2) {
+        // Remove spaces and convert to lowercase
+        String clean1 = s1.replaceAll("\\s+", "").toLowerCase();
+        String clean2 = s2.replaceAll("\\s+", "").toLowerCase();
+
+        // Check if lengths match
+        if (clean1.length() != clean2.length()) {
+            return false;
+        }
+
+        // Convert to char arrays and sort
+        char[] arr1 = clean1.toCharArray();
+        char[] arr2 = clean2.toCharArray();
+
+        Arrays.sort(arr1);
+        Arrays.sort(arr2);
+
+        // Compare sorted arrays
+        return Arrays.equals(arr1, arr2);
+    }
+
+    /**
+     * Alternative approach using character counting with HashMap
+     */
+    public static boolean isAnagramCount(String s1, String s2) {
+        String clean1 = s1.replaceAll("\\s+", "").toLowerCase();
+        String clean2 = s2.replaceAll("\\s+", "").toLowerCase();
+
+        if (clean1.length() != clean2.length()) {
+            return false;
+        }
+
+        // Count character frequency
+        Map<Character, Integer> charCount = new HashMap<>();
+
+        for (char c : clean1.toCharArray()) {
+            charCount.put(c, charCount.getOrDefault(c, 0) + 1);
+        }
+
+        for (char c : clean2.toCharArray()) {
+            if (!charCount.containsKey(c)) {
+                return false;
+            }
+            charCount.put(c, charCount.get(c) - 1);
+            if (charCount.get(c) < 0) {
+                return false;
+            }
+        }
+
+        return charCount.values().stream().allMatch(count -> count == 0);
+    }
+
+    public static void main(String[] args) {
+        String[][] testPairs = {
+                {"listen", "silent"},
+                {"The Eyes", "They See"},
+                {"dormitory", "dirty room"},
+                {"Astronomer", "Moon starer"},
+                {"hello", "world"},
+                {"anagram", "nagaram"},
+                {"rat", "car"}
+        };
+
+        System.out.println("=== Anagram Checker ===\n");
+
+        for (String[] pair : testPairs) {
+            boolean result = isAnagram(pair[0], pair[1]);
+            String status = result ? "✓ Anagram" : "✗ Not anagram";
+            System.out.printf("\"%s\" & \"%s\": %s%n", pair[0], pair[1], status);
+        }
+
+        System.out.println("\n=== Using Character Count Method ===\n");
+
+        for (int i = 0; i < 3; i++) {
+            boolean result = isAnagramCount(testPairs[i][0], testPairs[i][1]);
+            String status = result ? "✓ Anagram" : "✗ Not anagram";
+            System.out.printf("\"%s\" & \"%s\": %s%n",
+                    testPairs[i][0], testPairs[i][1], status);
+        }
+    }
+}
